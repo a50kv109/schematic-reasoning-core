@@ -1,0 +1,51 @@
+import {normalizeObservations} from './observations.js';
+import {discoverProviders} from './provider-registry.js';
+import {createHash} from 'node:crypto';
+export async function runVisionAnalysis({registry,input,request={},module}) {
+  const bytes=input.imageBytes;
+  const before=bytes?createHash('sha256').update(bytes).digest('hex'):null;
+  if(before&&input.source.sha256&&before!==input.source.sha256) return {status:'SOURCE_HASH_MISMATCH',observations:[],limitations:['Input image bytes do not match the declared source digest.']};
+  const available=discoverProviders(registry,{input,request}).filter(x=>x.available);
+  const selected=request.providerId?available.filter(x=>x.providerId===request.providerId):available.slice(0,1);
+  if(!selected.length)return {status:'PROVIDER_UNAVAILABLE',observations:[],manualFallbackAvailable:true,providers:discoverProviders(registry,{input,request}),limitations:['No requested vision provider is available; provide manual annotations.']};
+  if(available.length>1&&!request.providerId&&!request.compare) return {status:'CHOICE_REQUIRED',observations:[],availableProviders:available.map(x=>x.providerId)};
+  const targets=request.compare?selected:selected.slice(0,1), results=[];
+  for(const info of targets){
+    const provider=registry.get(info.providerId),caps=provider.describeCapabilities();
+    if(!caps.imageInput)return {status:'UNSUPPORTED_INPUT',observations:[],providerId:info.providerId,limitations:['Selected provider does not declare imageInput.']};
+    const providerInput={...input,imageBytes:bytes?Buffer.from(bytes):undefined};
+    const response=await provider.analyzeImage(providerInput,request);
+    const raw=provider.normalizeResponse(response,{input:providerInput,request});
+    const observations=normalizeObservations(raw,{provider,source:input.source,coordinateFrames:input.coordinateFrames,capabilities:caps});
+    results.push({providerId:info.providerId,observations,limitations:provider.reportLimitations()});
+  }
+  const after=bytes?createHash('sha256').update(bytes).digest('hex'):null;
+  if(before!==after)return {status:'SOURCE_MUTATED',observations:[],limitations:['Provider call changed source bytes.']};
+  const sourceIntegrity={sha256:before,bytesPresent:Boolean(bytes),verifiedAgainstDeclared:Boolean(before&&input.source.sha256),unchangedDuringAnalysis:before===after};
+  if(targets.length>1)return {status:'COMPARISON_COMPLETE',providerResults:results,observations:results.flatMap(r=>r.observations),model:null,sourceIntegrity,limitations:['Provider outputs are kept separate; comparison does not merge competing observations into geometry.']};
+  const observations=results.flatMap(r=>r.observations), insufficient=observations.some(o=>o.requiresConfirmation)||!observations.some(o=>o.objectType==='paper-boundary'&&o.geometry?.points?.length===4)||!observations.some(o=>o.objectType==='crease-line'&&o.geometry?.a&&o.geometry?.b);
+  if(insufficient)return {status:'NEEDS_CONFIRMATION',observations,providerResults:results,model:null,sourceIntegrity,limitations:['Observations are qualitative or insufficient to construct the requested Origami geometry. Confirm or supply annotations.']};
+  if(!module?.interpretObservations)return {status:'DOMAIN_UNSUPPORTED',observations,sourceIntegrity,limitations:['Domain module does not implement interpretObservations().']};
+  const interpreted=module.interpretObservations(observations,{input,request});
+  if(interpreted.status!=='READY')return {...interpreted,observations,providerResults:results,model:null,sourceIntegrity};
+  if(before)interpreted.input.source={...interpreted.input.source,sha256:before};
+  const detection=module.detect(interpreted.input);
+  if(detection.status!=='ANNOTATIONS_ACCEPTED')return {status:'INVALID_GEOMETRY',observations,providerResults:results,detection,model:null,sourceIntegrity};
+  const model=module.buildModel(detection,{input:interpreted.input,tolerance:request.tolerance??1e-6,angularTolerance:request.angularTolerance??1e-6});
+  model.uncertainties.push(...observations.filter(o=>o.uncertainty||o.quality==='approximate').map(o=>({observationId:o.observationId,providerId:o.providerId,quality:o.quality,confidence:o.confidence,uncertainty:o.uncertainty})));
+  model.provenance.push(...results.map(r=>({kind:'algorithm',providerId:r.providerId,method:'provider-assisted visual observation',confidence:null,validationStatus:'UNVERIFIED'})));
+  model.validationReport.imageLocalizationAccuracy={status:'NOT_VERIFIED',reason:'No independent pixel-level reference annotation was supplied.'};
+  model.validationReport.physicalMeasurementAccuracy={status:'INSUFFICIENT_EVIDENCE',reason:'Image geometry and provider observations do not establish physical dimensions.'};
+  const baseChecks=model.validationReport.checks.filter(c=>c.name.startsWith('base-model-'));
+  const geometryChecks=model.validationReport.checks.filter(c=>!c.name.startsWith('base-model-'));
+  model.validationReport.structuralValidity={status:baseChecks.every(c=>c.status==='PASS')?'PASS':'FAIL',checks:baseChecks};
+  model.validationReport.geometricConsistency={status:geometryChecks.every(c=>c.status==='PASS')?'PASS':'FAIL',checks:geometryChecks};
+  const independentValidation=module.validateModel(model,{tolerance:request.tolerance??1e-6,angularTolerance:request.angularTolerance??1e-6});
+  model.validationReport=independentValidation;
+  model.validationReport.imageLocalizationAccuracy={status:'NOT_VERIFIED',reason:'No independent pixel-level reference annotation was supplied.'};
+  model.validationReport.physicalMeasurementAccuracy={status:'INSUFFICIENT_EVIDENCE',reason:'Image geometry and provider observations do not establish physical dimensions.'};
+  model.validationReport.structuralValidity={status:baseChecks.every(c=>c.status==='PASS')?'PASS':'FAIL',checks:baseChecks};
+  model.validationReport.geometricConsistency={status:independentValidation.status};
+  const valid=independentValidation.status==='PASS';
+  return {status:valid?'VALIDATED_GEOMETRY':'INVALID_GEOMETRY',observations,providerResults:results,model,sourceIntegrity,limitations:[...new Set([...results.flatMap(r=>r.limitations),...model.limitations])],manualFallbackAvailable:true};
+}

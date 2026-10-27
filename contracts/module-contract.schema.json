@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://example.invalid/schematic-reasoning-core/module-contract/1",
+  "title":"Schematic Reasoning module manifest contract",
+  "type":"object",
+  "required":["moduleId","name","version","apiVersion","domain","description","supportedInputs","supportedObjectTypes","capabilities","limitations","validationMethods"],
+  "properties":{
+    "moduleId":{"type":"string","pattern":"^[a-z][a-z0-9-]*$"},"name":{"type":"string","minLength":1},"version":{"type":"string","pattern":"^[0-9]+\\.[0-9]+\\.[0-9]+$"},"apiVersion":{"type":"string"},"domain":{"type":"string"},"description":{"type":"string"},
+    "supportedInputs":{"type":"array","items":{"type":"string"}},"supportedObjectTypes":{"type":"array","items":{"type":"string"}},"capabilities":{"type":"array","items":{"type":"string"}},"limitations":{"type":"array","items":{"type":"string"}},"validationMethods":{"type":"array","items":{"type":"string"}}
+  },"additionalProperties":false
+}

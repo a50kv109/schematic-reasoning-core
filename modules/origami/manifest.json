@@ -1,0 +1,41 @@
+{
+  "moduleId": "origami",
+  "name": "Origami geometry adapter",
+  "version": "0.2.0",
+  "apiVersion": "1.0.0",
+  "domain": "origami-fold-diagrams",
+  "description": "Manual/assisted geometry modelling and independent invariant checks for simple square-paper fold diagrams.",
+  "supportedInputs": [
+    "raster-source-metadata",
+    "manual-point-line-annotations"
+  ],
+  "supportedObjectTypes": [
+    "paper-outline",
+    "paper-vertex",
+    "fold-line",
+    "fold-intersection",
+    "paper-center"
+  ],
+  "capabilities": [
+    "manual-annotation",
+    "square-validation",
+    "single-diagonal",
+    "midpoint-fold",
+    "double-diagonal",
+    "intersection-and-center-checks",
+    "assisted-observation-adaptation",
+    "orthogonal-midpoint-folds"
+  ],
+  "limitations": [
+    "automatic-line-detection-unsupported",
+    "photographic-accuracy-unverified",
+    "complex-multi-fold-models-unsupported"
+  ],
+  "validationMethods": [
+    "finite-coordinate-checks",
+    "square-side-and-angle-invariants",
+    "diagonal-endpoint-and-center-checks",
+    "opposite-side-midpoint-checks",
+    "orthogonal-opposite-side-midpoint-fold-checks"
+  ]
+}

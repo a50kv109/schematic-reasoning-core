@@ -1,0 +1,15 @@
+{
+  "name": "schematic-reasoning-core",
+  "version": "0.3.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test --test-reporter spec",
+    "test:core": "node --test --test-reporter spec tests/core.test.js",
+    "test:origami": "node --test --test-reporter spec modules/origami/tests/*.test.js",
+    "test:task08": "node --test --test-reporter spec tests/task08.test.js",
+    "package": "node scripts/build-package.mjs"
+  }
+}

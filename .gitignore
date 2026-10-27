@@ -1,0 +1,24 @@
+# Local package exports and generated manifests
+/outputs/
+/PACKAGE_MANIFEST.json
+
+# Local-only TASK 08 evidence depends on a rights-restricted scan
+/benchmarks/task08/
+/docs/TASK08_REPORT.md
+/docs/TASK08_PROVIDER_CAPABILITY_AUDIT.md
+/scripts/run-task08-benchmark.mjs
+/tests/local-real-scan.integration.test.js
+
+# Runtime and private/local material
+/node_modules/
+.env
+.env.*
+!.env.example
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.pdf
+.DS_Store
+Thumbs.db

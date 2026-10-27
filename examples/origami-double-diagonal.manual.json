@@ -1,0 +1,459 @@
+{
+  "schemaVersion": "schematic-reasoning-result/1",
+  "source": {
+    "sourceId": "example-square-double-diagonal",
+    "kind": "synthetic-coordinate-fixture",
+    "sha256": null,
+    "mediaType": null,
+    "uri": null
+  },
+  "coordinateFrames": [
+    {
+      "id": "sheet",
+      "kind": "ideal-document",
+      "units": "normalized",
+      "width": 1,
+      "height": 1
+    }
+  ],
+  "transformations": [],
+  "objects": [
+    {
+      "id": "paper-outline",
+      "type": "polyline",
+      "domainType": "paper-outline",
+      "frameId": "sheet",
+      "geometry": {
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "vertex-1",
+      "type": "point",
+      "domainType": "paper-vertex",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 0,
+        "y": 0
+      },
+      "label": "V1",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "vertex-2",
+      "type": "point",
+      "domainType": "paper-vertex",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 1,
+        "y": 0
+      },
+      "label": "V2",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "vertex-3",
+      "type": "point",
+      "domainType": "paper-vertex",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 1,
+        "y": 1
+      },
+      "label": "V3",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "vertex-4",
+      "type": "point",
+      "domainType": "paper-vertex",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 0,
+        "y": 1
+      },
+      "label": "V4",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "fold-AC",
+      "type": "segment",
+      "domainType": "fold-line",
+      "frameId": "sheet",
+      "geometry": {
+        "a": {
+          "x": 0,
+          "y": 0
+        },
+        "b": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      "label": "Fold 1",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "fold-BD",
+      "type": "segment",
+      "domainType": "fold-line",
+      "frameId": "sheet",
+      "geometry": {
+        "a": {
+          "x": 1,
+          "y": 0
+        },
+        "b": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      "label": "Fold 2",
+      "provenance": {
+        "kind": "human",
+        "actor": "example human annotation",
+        "method": "manually supplied analytic fixture coordinates",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "paper-center",
+      "type": "point",
+      "domainType": "paper-center",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "provenance": {
+        "kind": "derived",
+        "method": "arithmetic mean of four manually supplied corners",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED",
+        "parents": [
+          "vertex-1",
+          "vertex-2",
+          "vertex-3",
+          "vertex-4"
+        ]
+      }
+    },
+    {
+      "id": "fold-intersection-1",
+      "type": "point",
+      "domainType": "fold-intersection",
+      "frameId": "sheet",
+      "geometry": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "provenance": {
+        "kind": "derived",
+        "method": "segment intersection",
+        "confidence": null,
+        "validationStatus": "UNVERIFIED",
+        "parents": [
+          "fold-AC",
+          "fold-BD"
+        ]
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "relation-fold-intersection-1",
+      "type": "intersects",
+      "fromId": "fold-AC",
+      "toId": "fold-BD",
+      "atObjectId": "fold-intersection-1",
+      "frameId": "sheet"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "square-equal-sides",
+      "type": "equal-side-lengths",
+      "objectIds": [
+        "vertex-1",
+        "vertex-2",
+        "vertex-3",
+        "vertex-4"
+      ],
+      "expected": "all four sides equal",
+      "tolerance": 0.000001,
+      "unit": "normalized"
+    },
+    {
+      "id": "square-right-angles",
+      "type": "right-angles",
+      "objectIds": [
+        "vertex-1",
+        "vertex-2",
+        "vertex-3",
+        "vertex-4"
+      ],
+      "expected": "four interior angles are 90 degrees",
+      "tolerance": 0.000001,
+      "unit": "degree"
+    },
+    {
+      "id": "diagonal-center",
+      "type": "diagonal-intersection-or-midpoint-at-center",
+      "objectIds": [
+        "fold-AC",
+        "fold-BD",
+        "paper-center"
+      ],
+      "expected": "opposite-corner diagonal(s) pass through center",
+      "tolerance": 0.000001,
+      "unit": "normalized"
+    }
+  ],
+  "provenance": [
+    {
+      "kind": "human",
+      "actor": "example human annotation",
+      "method": "manually supplied analytic fixture coordinates",
+      "confidence": null,
+      "validationStatus": "UNVERIFIED"
+    }
+  ],
+  "validationReport": {
+    "schemaVersion": "schematic-reasoning-validation/1",
+    "status": "PASS",
+    "checks": [
+      {
+        "name": "four-finite-paper-corners",
+        "condition": "Exactly four finite paper vertices exist",
+        "measured": 4,
+        "tolerance": 0,
+        "status": "PASS",
+        "basis": "Origami square contract.",
+        "uncertainty": null
+      },
+      {
+        "name": "origami-objects-share-coordinate-frame",
+        "condition": "Outline, corners, folds and center use one declared coordinate frame",
+        "measured": true,
+        "tolerance": 0,
+        "status": "PASS",
+        "basis": "Coordinates from unlike frames cannot be compared without an explicit transform.",
+        "uncertainty": null
+      },
+      {
+        "name": "outline-matches-corner-vertices",
+        "condition": "outline-matches-corner-vertices within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Polyline vertices are compared to the ordered paper-corner objects.",
+        "uncertainty": null
+      },
+      {
+        "name": "square-side-1-equality",
+        "condition": "square-side-1-equality within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Side 1 differs from the mean of four sides; unit: normalized.",
+        "uncertainty": null
+      },
+      {
+        "name": "square-side-2-equality",
+        "condition": "square-side-2-equality within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Side 2 differs from the mean of four sides; unit: normalized.",
+        "uncertainty": null
+      },
+      {
+        "name": "square-side-3-equality",
+        "condition": "square-side-3-equality within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Side 3 differs from the mean of four sides; unit: normalized.",
+        "uncertainty": null
+      },
+      {
+        "name": "square-side-4-equality",
+        "condition": "square-side-4-equality within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Side 4 differs from the mean of four sides; unit: normalized.",
+        "uncertainty": null
+      },
+      {
+        "name": "right-angle-at-corner-1",
+        "condition": "right-angle-at-corner-1 within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Normalized adjacent-edge dot product; zero denotes perpendicular.",
+        "uncertainty": null
+      },
+      {
+        "name": "right-angle-at-corner-2",
+        "condition": "right-angle-at-corner-2 within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Normalized adjacent-edge dot product; zero denotes perpendicular.",
+        "uncertainty": null
+      },
+      {
+        "name": "right-angle-at-corner-3",
+        "condition": "right-angle-at-corner-3 within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Normalized adjacent-edge dot product; zero denotes perpendicular.",
+        "uncertainty": null
+      },
+      {
+        "name": "right-angle-at-corner-4",
+        "condition": "right-angle-at-corner-4 within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Normalized adjacent-edge dot product; zero denotes perpendicular.",
+        "uncertainty": null
+      },
+      {
+        "name": "closed-convex-outline",
+        "condition": "Four boundary edges form a non-degenerate convex loop",
+        "measured": true,
+        "tolerance": 0,
+        "status": "PASS",
+        "basis": "Successive edge cross products have consistent nonzero sign.",
+        "uncertainty": null
+      },
+      {
+        "name": "two-opposite-corner-diagonals",
+        "condition": "two-opposite-corner-diagonals within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Each diagonal endpoint pair matches a different opposite-corner pair.",
+        "uncertainty": null
+      },
+      {
+        "name": "diagonal-intersection-at-center",
+        "condition": "diagonal-intersection-at-center within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Intersection independently computed from line equations and compared with the four-corner centroid.",
+        "uncertainty": null
+      },
+      {
+        "name": "diagonals-have-equal-length",
+        "condition": "diagonals-have-equal-length within tolerance",
+        "measured": 0,
+        "tolerance": 0.000001,
+        "status": "PASS",
+        "basis": "Half-length difference of diagonals; square diagonals have equal length.",
+        "uncertainty": null
+      }
+    ],
+    "errors": [],
+    "uncertainties": [
+      {
+        "kind": "fixture-coordinate-uncertainty",
+        "value": 0,
+        "unit": "normalized",
+        "description": "Exact analytical fixture; no source pixels or physical sheet measured."
+      }
+    ],
+    "limitations": [
+      "Validation checks the submitted geometry, not whether it follows visible source-image pixels."
+    ]
+  },
+  "uncertainties": [
+    {
+      "kind": "fixture-coordinate-uncertainty",
+      "value": 0,
+      "unit": "normalized",
+      "description": "Exact analytical fixture; no source pixels or physical sheet measured."
+    }
+  ],
+  "limitations": [
+    "automatic-line-detection-unsupported",
+    "photographic-accuracy-unverified",
+    "complex-multi-fold-models-unsupported"
+  ],
+  "domainData": {
+    "origami": {
+      "configuration": "double-diagonal",
+      "cornerIds": [
+        "vertex-1",
+        "vertex-2",
+        "vertex-3",
+        "vertex-4"
+      ],
+      "outlineId": "paper-outline",
+      "foldIds": [
+        "fold-AC",
+        "fold-BD"
+      ],
+      "centerId": "paper-center"
+    }
+  }
+}

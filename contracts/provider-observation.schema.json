@@ -1,0 +1,10 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://example.invalid/schematic-reasoning-core/provider-observation/1",
+  "title":"Normalized visual observation",
+  "type":"object",
+  "required":["observationId","objectType","geometry","coordinateFrameId","sourceId","providerId","quality","confidence","uncertainty","evidence","limitations","requiresConfirmation"],
+  "properties":{
+    "observationId":{"type":"string"},"objectType":{"type":"string"},"geometry":{"type":["object","null"]},"coordinateFrameId":{"type":["string","null"]},"sourceId":{"type":"string"},"providerId":{"type":"string"},"quality":{"enum":["approximate","exact-tool","human","derived","qualitative"]},"confidence":{"type":["number","null"],"minimum":0,"maximum":1},"uncertainty":{},"evidence":{"type":"array"},"limitations":{"type":"array","items":{"type":"string"}},"text":{"type":["string","null"]},"requiresConfirmation":{"type":"boolean"}
+  },"additionalProperties":false
+}

@@ -1,0 +1,11 @@
+# Provider authoring guide
+
+The provider API is versioned independently at `PROVIDER_API_VERSION = 1.0.0` in `core/provider-registry.js`. A provider object has a `manifest` (`providerId`, `name`, `version`, `apiVersion`, `providerType`) and methods `describeCapabilities()`, `isAvailable(context)`, `analyzeImage(input, request)`, `normalizeResponse(response, context)`, and `reportLimitations()`.
+
+Register an imported, trusted provider object explicitly in a `Map`; manifests are descriptive data and are never evaluated as code. Availability must come from a real host integration or explicit configuration. Capability flags default to false. The runner selects one available provider by default; a `providerId` selects one explicitly and `compare:true` requests comparison. No vendor APIs, credentials, or host-internal interfaces are assumed here.
+
+`analyzeImage` returns provider-specific data; `normalizeResponse` maps it to observations. Each observation needs `objectType`, `sourceId`, and `quality`. Coordinate-bearing items also require a declared `coordinateFrameId` and valid geometry. Quality is one of `approximate`, `exact-tool`, `human`, `derived`, or `qualitative`; declared capabilities gate approximate and exact-tool coordinates. A qualitative text-only observation is preserved without geometry and requires confirmation. Confidence is optional and must be in [0,1]. The core rejects wrong-source IDs, undeclared frames, malformed geometry, undeclared coordinate claims and false qualitative precision.
+
+The provider is domain-agnostic. Origami `interpretObservations` maps the common types `paper-boundary` and `crease-line` to the existing annotation API, then the existing detector/builder/independent validator run. Domain modules must not import vendor code. The core remains usable in manual mode without registering any provider.
+
+Example: `examples/mock-vision-provider.mjs`. Its fixed observations are test fixtures and are not derived from an image. Tests exercise provider contracts and deterministic geometry only; no live model integration has been exercised. A real host integration should pass immutable source bytes or source identity, declare actual capabilities conservatively, preserve evidence and uncertainty, then be evaluated against independently annotated images before any accuracy claim.
